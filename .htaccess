@@ -1,0 +1,278 @@
+# Enhanced .htaccess for Osclass Technical SEO Optimization
+# Replace "yourdomain.com" with your actual domain name
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+
+# 1. Force HTTPS and remove www (UPDATE WITH YOUR DOMAIN)
+RewriteCond %{HTTPS} !=on [OR]
+RewriteCond %{HTTP_HOST} ^www\.yourdomain\.com$ [NC]
+RewriteRule ^(.*)$ https://yourdomain.com/$1 [R=301,L]
+
+# 2. URL Parameter Cleanup - Remove tracking and unnecessary parameters
+# Remove UTM tracking parameters
+RewriteCond %{QUERY_STRING} ^(.*)&?utm_[^&]*(.*)$ [NC]
+RewriteRule ^(.*)$ /$1?%1%2 [R=301,L]
+
+# Remove Facebook click ID
+RewriteCond %{QUERY_STRING} ^(.*)&?fbclid=[^&]*(.*)$ [NC]
+RewriteRule ^(.*)$ /$1?%1%2 [R=301,L]
+
+# Remove Google click ID
+RewriteCond %{QUERY_STRING} ^(.*)&?gclid=[^&]*(.*)$ [NC]
+RewriteRule ^(.*)$ /$1?%1%2 [R=301,L]
+
+# Remove Microsoft click ID
+RewriteCond %{QUERY_STRING} ^(.*)&?msclkid=[^&]*(.*)$ [NC]
+RewriteRule ^(.*)$ /$1?%1%2 [R=301,L]
+
+# Remove session parameters
+RewriteCond %{QUERY_STRING} ^(.*)&?PHPSESSID=[^&]*(.*)$ [NC]
+RewriteRule ^(.*)$ /$1?%1%2 [R=301,L]
+
+# Remove common tracking parameters
+RewriteCond %{QUERY_STRING} ^(.*)&?_ga=[^&]*(.*)$ [NC]
+RewriteRule ^(.*)$ /$1?%1%2 [R=301,L]
+
+RewriteCond %{QUERY_STRING} ^(.*)&?_gid=[^&]*(.*)$ [NC]
+RewriteRule ^(.*)$ /$1?%1%2 [R=301,L]
+
+# Remove referrer parameters
+RewriteCond %{QUERY_STRING} ^(.*)&?ref=[^&]*(.*)$ [NC]
+RewriteRule ^(.*)$ /$1?%1%2 [R=301,L]
+
+RewriteCond %{QUERY_STRING} ^(.*)&?referrer=[^&]*(.*)$ [NC]
+RewriteRule ^(.*)$ /$1?%1%2 [R=301,L]
+
+# Remove redundant Osclass parameters when they match defaults
+# Remove default order parameter (dt_pub_date)
+RewriteCond %{QUERY_STRING} ^(.*)&?sOrder=dt_pub_date(.*)$ [NC]
+RewriteRule ^(.*)$ /$1?%1%2 [R=301,L]
+
+# Remove default order type (DESC = 0)
+RewriteCond %{QUERY_STRING} ^(.*)&?iOrderType=0(.*)$ [NC]
+RewriteRule ^(.*)$ /$1?%1%2 [R=301,L]
+
+# Remove default show as (list)
+RewriteCond %{QUERY_STRING} ^(.*)&?sShowAs=list(.*)$ [NC]
+RewriteRule ^(.*)$ /$1?%1%2 [R=301,L]
+
+# Clean up empty query strings
+RewriteCond %{QUERY_STRING} ^&*$
+RewriteRule ^(.*)$ /$1? [R=301,L]
+
+# 3. URL Normalization and Legacy Redirects
+
+# Trailing slash consistency - remove trailing slashes except for directories
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} (.+)/$
+RewriteRule ^(.+)/$ /$1 [R=301,L]
+
+# Case sensitivity normalization - redirect uppercase to lowercase
+RewriteCond %{REQUEST_URI} [A-Z]
+RewriteRule ^(.*)$ ${lowercase:$1} [R=301,L]
+
+# Legacy file extension redirects
+RewriteRule ^(.+)\.html?$ /$1 [R=301,L]
+RewriteRule ^(.+)\.php$ /$1 [R=301,L]
+
+# Old Osclass URL format redirects
+# Redirect old-style category URLs (index.php?page=search&sCategory=X)
+RewriteCond %{QUERY_STRING} ^page=search&sCategory=([0-9]+)(.*)$
+RewriteRule ^index\.php$ /search?sCategory=%1%2 [R=301,L]
+
+# Redirect old-style item URLs (index.php?page=item&id=X)
+RewriteCond %{QUERY_STRING} ^page=item&id=([0-9]+)(.*)$
+RewriteRule ^index\.php$ /item/%1%2 [R=301,L]
+
+# Redirect old-style user URLs (index.php?page=user)
+RewriteCond %{QUERY_STRING} ^page=user(.*)$
+RewriteRule ^index\.php$ /user%1 [R=301,L]
+
+# Common URL variations and typos
+RewriteRule ^home/?$ / [R=301,L]
+RewriteRule ^main/?$ / [R=301,L]
+RewriteRule ^index/?$ / [R=301,L]
+
+# Search variations
+RewriteRule ^find/?(.*)$ /search/$1 [R=301,L]
+RewriteRule ^browse/?(.*)$ /search/$1 [R=301,L]
+RewriteRule ^category/?(.*)$ /search/$1 [R=301,L]
+
+# Item variations
+RewriteRule ^listing/?(.*)$ /item/$1 [R=301,L]
+RewriteRule ^ad/?(.*)$ /item/$1 [R=301,L]
+RewriteRule ^classified/?(.*)$ /item/$1 [R=301,L]
+
+# User variations
+RewriteRule ^profile/?(.*)$ /user/$1 [R=301,L]
+RewriteRule ^account/?(.*)$ /user/$1 [R=301,L]
+RewriteRule ^member/?(.*)$ /user/$1 [R=301,L]
+
+# Common broken link patterns
+RewriteRule ^page/(.*)$ /$1 [R=301,L]
+RewriteRule ^pages/(.*)$ /$1 [R=301,L]
+RewriteRule ^content/(.*)$ /$1 [R=301,L]
+
+# Old admin URLs (redirect to proper admin)
+RewriteRule ^admin/?(.*)$ /oc-admin/$1 [R=301,L]
+RewriteRule ^administrator/?(.*)$ /oc-admin/$1 [R=301,L]
+
+# Language variations (if applicable)
+RewriteRule ^en/(.*)$ /$1 [R=301,L]
+RewriteRule ^english/(.*)$ /$1 [R=301,L]
+
+# Mobile variations
+RewriteRule ^m/(.*)$ /$1 [R=301,L]
+RewriteRule ^mobile/(.*)$ /$1 [R=301,L]
+
+# RSS and feed redirects
+RewriteRule ^rss/?(.*)$ /feed/$1 [R=301,L]
+RewriteRule ^feeds?/?(.*)$ /feed/$1 [R=301,L]
+
+# Common CMS patterns that might exist
+RewriteRule ^wp-content/(.*)$ /oc-content/$1 [R=301,L]
+RewriteRule ^wp-admin/?(.*)$ /oc-admin/$1 [R=301,L]
+RewriteRule ^wordpress/(.*)$ /$1 [R=301,L]
+
+# Prevent access to sensitive files and directories
+RewriteRule ^oc-includes/ - [F,L]
+RewriteRule ^\.git/ - [F,L]
+RewriteRule ^\.htaccess$ - [F,L]
+RewriteRule ^config\.php$ - [F,L]
+
+# 4. Performance Optimization - Caching and Compression
+
+# Browser Caching
+<IfModule mod_expires.c>
+ExpiresActive On
+
+# CSS and JavaScript
+ExpiresByType text/css "access plus 1 year"
+ExpiresByType application/javascript "access plus 1 year"
+ExpiresByType application/x-javascript "access plus 1 year"
+
+# Images
+ExpiresByType image/png "access plus 1 year"
+ExpiresByType image/jpg "access plus 1 year"
+ExpiresByType image/jpeg "access plus 1 year"
+ExpiresByType image/gif "access plus 1 year"
+ExpiresByType image/webp "access plus 1 year"
+ExpiresByType image/svg+xml "access plus 1 year"
+ExpiresByType image/x-icon "access plus 1 year"
+
+# Fonts
+ExpiresByType font/woff "access plus 1 year"
+ExpiresByType font/woff2 "access plus 1 year"
+ExpiresByType application/font-woff "access plus 1 year"
+ExpiresByType application/font-woff2 "access plus 1 year"
+
+# HTML and XML
+ExpiresByType text/html "access plus 1 hour"
+ExpiresByType application/xml "access plus 1 hour"
+ExpiresByType text/xml "access plus 1 hour"
+
+# Other files
+ExpiresByType application/pdf "access plus 1 month"
+ExpiresByType text/plain "access plus 1 month"
+</IfModule>
+
+# Gzip Compression
+<IfModule mod_deflate.c>
+AddOutputFilterByType DEFLATE text/plain
+AddOutputFilterByType DEFLATE text/html
+AddOutputFilterByType DEFLATE text/xml
+AddOutputFilterByType DEFLATE text/css
+AddOutputFilterByType DEFLATE text/javascript
+AddOutputFilterByType DEFLATE application/xml
+AddOutputFilterByType DEFLATE application/xhtml+xml
+AddOutputFilterByType DEFLATE application/rss+xml
+AddOutputFilterByType DEFLATE application/javascript
+AddOutputFilterByType DEFLATE application/x-javascript
+AddOutputFilterByType DEFLATE application/json
+AddOutputFilterByType DEFLATE image/svg+xml
+
+# Compress fonts
+AddOutputFilterByType DEFLATE font/woff
+AddOutputFilterByType DEFLATE font/woff2
+AddOutputFilterByType DEFLATE application/font-woff
+AddOutputFilterByType DEFLATE application/font-woff2
+</IfModule>
+
+# Cache Control Headers
+<IfModule mod_headers.c>
+# CSS and JavaScript
+<FilesMatch "\.(css|js)$">
+Header set Cache-Control "public, max-age=31536000, immutable"
+</FilesMatch>
+
+# Images
+<FilesMatch "\.(png|jpg|jpeg|gif|webp|svg|ico)$">
+Header set Cache-Control "public, max-age=31536000, immutable"
+</FilesMatch>
+
+# Fonts
+<FilesMatch "\.(woff|woff2|eot|ttf)$">
+Header set Cache-Control "public, max-age=31536000, immutable"
+Header set Access-Control-Allow-Origin "*"
+</FilesMatch>
+
+# HTML
+<FilesMatch "\.(html|htm)$">
+Header set Cache-Control "public, max-age=3600"
+</FilesMatch>
+</IfModule>
+
+# 5. Osclass Routing (REQUIRED - DO NOT MODIFY)
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>
+
+# 6. Advanced Performance Optimizations
+
+# Security and Performance Headers
+<IfModule mod_headers.c>
+# Security headers
+Header always set X-Content-Type-Options nosniff
+Header always set X-Frame-Options DENY
+Header always set X-XSS-Protection "1; mode=block"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+# Performance hints
+Header add Link "<//fonts.googleapis.com>; rel=dns-prefetch"
+Header add Link "<//fonts.gstatic.com>; rel=dns-prefetch"
+Header add Link "<//cdnjs.cloudflare.com>; rel=dns-prefetch"
+
+# Preconnect to critical third-party origins
+Header add Link "<//fonts.googleapis.com>; rel=preconnect"
+Header add Link "<//fonts.gstatic.com>; rel=preconnect; crossorigin"
+</IfModule>
+
+# Optimize file delivery
+<IfModule mod_rewrite.c>
+# Remove ETags (use Last-Modified instead)
+Header unset ETag
+FileETag None
+
+# Force compression for mangled Accept-Encoding headers
+RewriteCond %{HTTP:Accept-Encoding} gzip
+RewriteCond %{REQUEST_FILENAME}\.gz -f
+RewriteRule ^(.*)$ $1.gz [QSA,L]
+
+# Serve correct content types for compressed files
+<FilesMatch "\.css\.gz$">
+    ForceType text/css
+    Header set Content-Encoding gzip
+</FilesMatch>
+
+<FilesMatch "\.js\.gz$">
+    ForceType application/javascript
+    Header set Content-Encoding gzip
+</FilesMatch>
+</IfModule>
+
+# IMPORTANT: Update the domain name in the HTTPS redirect section above
+# Replace "yourdomain.com" with your actual domain name
